@@ -4,7 +4,7 @@
 
 Plugin Name:  Twitter Tools: bit.ly Links
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/twitter-tools-bitly-links/
-Version:      1.0.0
+Version:      1.0.1
 Description:  Makes the links that <a href="http://wordpress.org/extend/plugins/twitter-tools/">Twitter Tools</a> posts to Twitter be API-created <a href="http://bit.ly/">bit.ly</a> links so you can track the number of clicks and such via your bit.ly account. Requires PHP 5.2.0+.
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
@@ -33,7 +33,9 @@ class TwitterToolsBitlyLinks {
 		add_filter( 'tweet_blog_post_url',      array(&$this, 'modify_url') );
 
 		// Make sure the user has filled in their login and API key
-		if ( !$this->options_check() && current_user_can('manage_options') )
+		$login  = trim( get_option('viper_ttbl_login') );
+		$apikey = trim( get_option('viper_ttbl_apikey') );
+		if ( ( !$login || !$apikey ) && current_user_can('manage_options') )
 			add_action( 'admin_notices',        array(&$this, 'settings_warn') );
 	}
 
@@ -58,28 +60,17 @@ class TwitterToolsBitlyLinks {
 	}
 
 
-	// Wrapper function to prevent duplicate code
-	function options_check() {
-		// Make sure the user has filled in their login and API key
-		$login  = urlencode( strtolower( trim( get_option('viper_ttbl_login') ) ) );
-		$apikey = urlencode( trim( get_option('viper_ttbl_apikey') ) );
-
-		if ( empty($login) || empty($apikey) )
-			return false;
-
-		return true;
-	}
-
-
 	// Modify the URL being sent to Twitter by Twitter Tools
 	function modify_url( $url ) {
 
 		// Make sure the user has filled in their login and API key
-		if ( !$this->options_check() )
+		$login  = urlencode( strtolower( trim( get_option('viper_ttbl_login') ) ) );
+		$apikey = urlencode( trim( get_option('viper_ttbl_apikey') ) );
+		if ( empty($login) || empty($apikey) )
 			return $url;
 
 		// Tell bit.ly to shorten the URL for us
-		$response = wp_remote_retrieve_body( wp_remote_get( "http://api.bit.ly/shorten?version=2.0.1&format=json&login={$login}&apiKey={$apikey}&longUrl=" . urlencode( $url ) ) );
+		$response = wp_remote_retrieve_body( wp_remote_get( "http://api.bit.ly/shorten?version=2.0.1&format=json&login={$login}&apiKey={$apikey}&longUrl=" . urlencode( $url . '#ttblworks' ) ) );
 
 		if ( empty($response) )
 			return $url;

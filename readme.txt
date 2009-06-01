@@ -44,6 +44,10 @@ Did you make sure to fill in your bit.ly login and API key on the plugin's setti
 
 == ChangeLog ==
 
+**Version 1.0.1**
+
+* Fix a stupid mistake on my part that completely broke the plugin.
+
 **Version 1.0.0**
 
 * Initial release!
