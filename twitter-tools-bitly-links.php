@@ -4,7 +4,7 @@
 
 Plugin Name:  Twitter Tools: bit.ly Links
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/twitter-tools-bitly-links/
-Version:      1.0.1
+Version:      1.1.0
 Description:  Makes the links that <a href="http://wordpress.org/extend/plugins/twitter-tools/">Twitter Tools</a> posts to Twitter be API-created <a href="http://bit.ly/">bit.ly</a> links so you can track the number of clicks and such via your bit.ly account. Requires PHP 5.2.0+.
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
@@ -70,7 +70,7 @@ class TwitterToolsBitlyLinks {
 			return $url;
 
 		// Tell bit.ly to shorten the URL for us
-		$response = wp_remote_retrieve_body( wp_remote_get( "http://api.bit.ly/shorten?version=2.0.1&format=json&login={$login}&apiKey={$apikey}&longUrl=" . urlencode( $url . '#ttblworks' ) ) );
+		$response = wp_remote_retrieve_body( wp_remote_get( "http://api.bit.ly/shorten?version=2.0.1&format=json&history=1&login={$login}&apiKey={$apikey}&longUrl=" . urlencode( $url ) ) );
 
 		if ( empty($response) )
 			return $url;
@@ -108,17 +108,21 @@ class TwitterToolsBitlyLinks {
 
 	<table class="form-table">
 		<tr valign="top">
-			<th scope="row"><label for="viper_ttbl_login"><?php _e('bit.ly Login') ?></label></th>
-			<td><input name="viper_ttbl_login" type="text" id="viper_ttbl_login"  value="<?php form_option('viper_ttbl_login'); ?>" class="regular-text" /></td>
+			<th scope="row"><label for="viper_ttbl_login"><?php _e( 'bit.ly Login', 'twitter-tools-bitly-links' ); ?></label></th>
+			<td><input type="text" name="viper_ttbl_login" id="viper_ttbl_login" value="<?php form_option('viper_ttbl_login'); ?>" class="regular-text" /></td>
 		</tr>
 		<tr valign="top">
-			<th scope="row"><label for="viper_ttbl_apikey"><?php _e('bit.ly API Key') ?></label></th>
-			<td><input name="viper_ttbl_apikey" type="text" id="viper_ttbl_apikey"  value="<?php form_option('viper_ttbl_apikey'); ?>" class="regular-text" />
-			<span class="description"><?php printf( __( 'This can be found on your <a href="%s">account page</a>.', 'twitter-tools-bitly-links' ), 'http://bit.ly/account/' ); ?></span></td>
+			<th scope="row"><label for="viper_ttbl_apikey"><?php _e( 'bit.ly API Key', 'twitter-tools-bitly-links' ); ?></label></th>
+			<td>
+				<input type="text" name="viper_ttbl_apikey" id="viper_ttbl_apikey" value="<?php form_option('viper_ttbl_apikey'); ?>" class="regular-text" />
+				<span class="description"><?php printf( __( 'This can be found on your <a href="%s">account page</a>.', 'twitter-tools-bitly-links' ), 'http://bit.ly/account/' ); ?></span>
+			</td>
+		</tr>
+		<tr valign="top" class="hide-if-no-js">
+			<th scope="row"><?php _e( 'API Status', 'twitter-tools-bitly-links' ); ?></th>
+			<td style="font-size:1em"><strong id="viper_ttbl_status"><em style="font-weight:normal">Checking...</em></strong></td>
 		</tr>
 	</table>
-
-	<p style="margin-top:25px"><strong id="viper_ttbl_status">&nbsp;</strong></p>
 
 	<p class="submit">
 		<input type="submit" name="twitter-tools-bitly-links-submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
