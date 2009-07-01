@@ -120,7 +120,7 @@ class TwitterToolsBitlyLinks {
 		</tr>
 		<tr valign="top" class="hide-if-no-js">
 			<th scope="row"><?php _e( 'API Status', 'twitter-tools-bitly-links' ); ?></th>
-			<td style="font-size:1em"><strong id="viper_ttbl_status"><em style="font-weight:normal">Checking...</em></strong></td>
+			<td style="font-size:1em"><span id="viper_ttbl_status"><em>Checking...</em></span></td>
 		</tr>
 	</table>
 
@@ -146,20 +146,20 @@ class TwitterToolsBitlyLinks {
 		if ( empty($login) || empty($apikey) )
 			exit();
 
-		// Tell bit.ly to shorten the URL for us
+		// Ask bit.ly for details about a random shortened URL in order to test the authentication details
 		$response = wp_remote_retrieve_body( wp_remote_get( "http://api.bit.ly/expand?version=2.0.1&shortUrl=http://bit.ly/mnvj7&login={$login}&apiKey={$apikey}" ) );
 
 		if ( empty($response) )
-			exit( '<span style="color:red">' . __('Failed to test credentials. Hmm.', 'twitter-tools-bitly-links') . '</span>' );
+			exit( '<strong style="color:red">' . __('Failed to test credentials. Hmm.', 'twitter-tools-bitly-links') . '</strong>' );
 
 		// Decode the response from bit.ly
 		if ( !$response = json_decode( $response, true ) )
-			exit( '<span style="color:red">' . __('Failed to parse bit.ly API response. Hmm.', 'twitter-tools-bitly-links') . '</span>' );
+			exit( '<strong style="color:red">' . __('Failed to parse bit.ly API response. Hmm.', 'twitter-tools-bitly-links') . '</strong>' );
 
 		if ( !isset($response['errorCode']) || 0 != $response['errorCode'] )
-			exit( '<span style="color:red">' . __('Your credentials are invalid. Please double-check them.', 'twitter-tools-bitly-links') . '</span>' );
+			exit( '<strong style="color:red">' . __('Your credentials are invalid. Please double-check them.', 'twitter-tools-bitly-links') . '</strong>' );
 
-		exit( '<span style="color:green">' . __('Your credentials are valid.', 'twitter-tools-bitly-links') . '</span>' );
+		exit( '<strong style="color:green">' . __('Your credentials are valid.', 'twitter-tools-bitly-links') . '</strong>' );
 	}
 }
 
