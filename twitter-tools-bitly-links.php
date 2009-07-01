@@ -161,12 +161,6 @@ class TwitterToolsBitlyLinks {
 
 		exit( '<span style="color:green">' . __('Your credentials are valid.', 'twitter-tools-bitly-links') . '</span>' );
 	}
-
-
-	// PHP4 compatibility
-	function TwitterToolsBitlyLinks() {
-		$this->__construct();
-	}
 }
 
 // Start this plugin once all other plugins are fully loaded
