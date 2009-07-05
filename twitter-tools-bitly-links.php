@@ -4,7 +4,7 @@
 
 Plugin Name:  Twitter Tools: bit.ly Links
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/twitter-tools-bitly-links/
-Version:      1.1.0
+Version:      1.1.1
 Description:  Makes the links that <a href="http://wordpress.org/extend/plugins/twitter-tools/">Twitter Tools</a> posts to Twitter be API-created <a href="http://bit.ly/">bit.ly</a> links so you can track the number of clicks and such via your bit.ly account. Requires PHP 5.2.0+.
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
@@ -15,28 +15,32 @@ class TwitterToolsBitlyLinks {
 
 	// Initalize the plugin by registering the hooks
 	function __construct() {
-		// This plugin requires PHP 5.2.0+ and WordPress 2.7+
-		if ( !function_exists('json_decode') || !function_exists('wp_remote_retrieve_body') )
-			return;
-
 		// Load localization domain
 		load_plugin_textdomain( 'twitter-tools-bitly-links', false, '/twitter-tools-bitly-links/localization' );
 
-		// Register options
-		add_option( 'viper_ttbl_login' );
-		add_option( 'viper_ttbl_apikey' );
+		// This plugin requires PHP 5.2.0+ and WordPress 2.7+
+		if ( function_exists('json_decode') && function_exists('wp_remote_retrieve_body') ) {
+			// Register options
+			add_option( 'viper_ttbl_login' );
+			add_option( 'viper_ttbl_apikey' );
 
-		// Register hooks
-		add_action( 'admin_menu',               array(&$this, 'register_settings_page') );
-		add_action( 'wp_ajax_viper_ttbl_check', array(&$this, 'ajax_authentication_check') );
-		add_filter( 'whitelist_options',        array(&$this, 'whitelist_options') );
-		add_filter( 'tweet_blog_post_url',      array(&$this, 'modify_url') );
+			// Register hooks
+			add_action( 'admin_menu',               array(&$this, 'register_settings_page') );
+			add_action( 'wp_ajax_viper_ttbl_check', array(&$this, 'ajax_authentication_check') );
+			add_filter( 'whitelist_options',        array(&$this, 'whitelist_options') );
+			add_filter( 'tweet_blog_post_url',      array(&$this, 'modify_url') );
 
-		// Make sure the user has filled in their login and API key
-		$login  = trim( get_option('viper_ttbl_login') );
-		$apikey = trim( get_option('viper_ttbl_apikey') );
-		if ( ( !$login || !$apikey ) && current_user_can('manage_options') )
-			add_action( 'admin_notices',        array(&$this, 'settings_warn') );
+			// Make sure the user has filled in their login and API key
+			$login  = trim( get_option('viper_ttbl_login') );
+			$apikey = trim( get_option('viper_ttbl_apikey') );
+			if ( ( !$login || !$apikey ) && current_user_can('manage_options') )
+				add_action( 'admin_notices',        array(&$this, 'settings_warn') );
+		}
+
+		// Old version of PHP or WordPress? Let the user know.
+		elseif ( current_user_can('activate_plugins') ) {
+			add_action( 'admin_notices',            array(&$this, 'old_version_warning') );
+		}
 	}
 
 
@@ -51,6 +55,13 @@ class TwitterToolsBitlyLinks {
 		$whitelist_options['twitter-tools-bitly-links'] = array( 'viper_ttbl_login', 'viper_ttbl_apikey' );
 
 		return $whitelist_options;
+	}
+
+
+	// Warn about an old version of PHP or WordPress
+	function old_version_warning() {
+		global $wp_version;
+		echo '<div class="error"><p>' . sprintf( __( '<strong>Twitter Tools: bit.ly Links:</strong> You do not meet the minimum requirements of PHP %1$s and WordPress %2$s. You are currently using PHP %3$s and WordPress %4$s.', 'vipers-video-quicktags' ), '5.2.0', '2.7', PHP_VERSION, $wp_version ) . "</p></div>\n";
 	}
 
 

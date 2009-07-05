@@ -46,6 +46,10 @@ Did you make sure to fill in your bit.ly login and API key on the plugin's setti
 
 == ChangeLog ==
 
+**Version 1.1.1**
+
+* Display an error message to the user if they don't meet the minimum PHP and WordPress version requirements.
+
 **Version 1.1.0**
 
 * Apparently you need `history=1` in the API call in order for it to show up in your history. That was my problem.
